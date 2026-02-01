@@ -5,24 +5,20 @@ This script for prepare data and parameters for parameter estimator.
 3. Follow parameter estimator instruction.
 %}
 
-% R and L from  
-motor_R = 2.99;
-motor_L = 37.59;
+% R and L from experiment
+motor_R = 2.52;
+motor_L = 33.31;
 % Optimization's parameters
 motor_Eff = 0.5;
 motor_Ke = 0.05;
 motor_J = 1;
 motor_B = 1;
 
-% motor_Eff = 0.1;
-% motor_Ke = 0.05;
-% motor_J = 1;
-% motor_B = 1;
-
 % Extract collected data
 Input = data{2}.Values.Data;
 Time = data{1}.Values.Time;
 Velo = double(data{1}.Values.Data);
+Velo2 = Velo / 
 
 % Plot 
 figure(Name='Motor velocity response')
