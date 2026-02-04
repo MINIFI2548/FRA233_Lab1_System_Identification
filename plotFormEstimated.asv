@@ -1,0 +1,9 @@
+Estimated_data = SDOSessionData.Data.Workspace.LocalWorkspace.Exp.Parameters;
+Raw_data = double(data{2}.va)
+
+motor_B = Estimated_data(1).Value;
+motor_Eff = Estimated_data(2).Value;
+motor_Ke = Estimated_data(3).Value;
+motor_J = Estimated_data(4).Value;
+motor_R = 2.99;
+motor_L = 37.59;

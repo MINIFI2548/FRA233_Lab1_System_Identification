@@ -5,26 +5,26 @@ This script for prepare data and parameters for parameter estimator.
 3. Follow parameter estimator instruction.
 %}
 
+raw_signal_name = "stair-2";
+data = load("EACH SIGNAL DATA -1\" + raw_signal_name + ".mat");
+        data = data.data;
 % R and L from  
-motor_R = 2.99;
-motor_L = 37.59;
+motor_R = 2.97;
+motor_L = 36.22e-3;
 % Optimization's parameters
 motor_Eff = 0.5;
 motor_Ke = 0.05;
 motor_J = 1;
 motor_B = 1;
 
-% motor_Eff = 0.1;
-% motor_Ke = 0.05;
-% motor_J = 1;
-% motor_B = 1;
-
 % Extract collected data
-Input = data{2}.Values.Data;
 Time = data{1}.Values.Time;
+Input =  data{2}.Values.Data;
+Input = squeeze(Input);
+Raw_input_sig = timeseries(Input, Time);
 Velo = double(data{1}.Values.Data);
 
 % Plot 
 figure(Name='Motor velocity response')
 plot(Time,Velo,Time,Input)
-
+% plot(Time, Velo)
