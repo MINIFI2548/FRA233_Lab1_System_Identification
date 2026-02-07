@@ -1,5 +1,5 @@
 % 1. กำหนดชื่อ Folder ที่ต้องการบันทึก
-folderName = 'Test Signal';
+folderName = 'Cross Validation';
 
 % ถ้ายังไม่มี Folder นี้ ให้สร้างขึ้นมาใหม่
 if ~exist(folderName, 'dir')
@@ -23,7 +23,7 @@ for k = 1:length(figs)
     figName = regexprep(figName, '[\\/:\*\?"<>|]', '_');
     
     % สร้าง path ของไฟล์: folder/ชื่อไฟล์.png
-    filename = fullfile(folderName, [figName, '.png']);
+    filename = fullfile(folderName, [figName, '.svg']);
     
     fprintf('กำลังบันทึกไฟล์: %s\n', filename);
     

@@ -1,8 +1,8 @@
 model_list = {'ramp', 'sine', 'stair', 'step','chirp'};
 for k = 1:5
-    for i = 1:1 
+    for i = 1:3 
         model_name = model_list{k} + "-" + string(i);
-        % % model_name = 'stair-3';
+        % model_name = 'stair-3';
         % 1. โหลดพารามิเตอร์ที่ได้จากการ Estimate (จะได้ตัวแปร motor_B, motor_J, ฯลฯ)
         load("Estimated-" + model_name + ".mat");
         
@@ -84,7 +84,7 @@ for k = 1:5
         'R_m = %.2f\n' ...
         'L_m = %.6f\n' ...
         'total RMSE = %.2f'], ...
-        motor_B, motor_Eff, motor_J, motor_Ke, 2.97, 3272.36e-6, total_rmse);
+        motor_B, motor_Eff, motor_J, motor_Ke, motor_R, motor_L, total_rmse);
         tb = annotation('textbox', ...
                    'String', paramText, ...
                    'FitBoxToText', 'on', ...
@@ -94,7 +94,7 @@ for k = 1:5
                    'FontName', 'Consolas');
         
         tb.Units = 'normalized';
-        tb.Position(1) = 1 - tb.Position(3) - 0.001;  % เว้นขอบขวา
+        tb.Position(1) = 1 - tb.Position(3) - 0.05;  % เว้นขอบขวา
         tb.Position(2) = 1 - tb.Position(4) - 0.15;  % เว้นขอบบน
         
         % สร้าง Super Title
