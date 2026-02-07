@@ -1,7 +1,7 @@
 %% --- 1. ตั้งค่าการเลือกไฟล์และฟิลเตอร์ ---
 usePrefix = false; % true = ใช้ Prefix, false = ใช้รายชื่อใน targetFiles
 prefix = 'Ramp1-'; 
-targetFiles = {'Ramp1-30HZ.mat', 'Ramp1-152HZ.mat', 'Ramp1-15152HZ.mat'}; 
+targetFiles = {'sine 1hz 1.mat'}; 
 
 fs = 1000; % Sampling Frequency
 lpFilt = designfilt('lowpassiir', 'PassbandFrequency', 1, ...

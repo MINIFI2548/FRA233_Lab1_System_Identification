@@ -1,0 +1,103 @@
+model_list = {'ramp', 'sine', 'stair', 'step','chirp'};
+for k = 1:1
+    for i = 1:1 
+        % model_name = model_list{k} + "-" + string(i)
+        model_name = 'stair-3'
+        % 1. โหลดพารามิเตอร์ที่ได้จากการ Estimate (จะได้ตัวแปร motor_B, motor_J, ฯลฯ)
+        load("Estimated-" + model_name + ".mat");
+        
+        % รายชื่อไฟล์ในโฟลเดอร์ Test Signal (อ้างอิงจากรูปภาพ)
+        raw_signal_list = {'chirp', 'sine', 'stair', 'step', 'chirp'};
+        
+        % --- จัดการชื่อสำหรับ sgtitle ---
+        % เปลี่ยน "-" เป็น " " (Space)
+        formatted_name = strrep(model_name, "-", " ");
+        % เปลี่ยนตัวแรกเป็นพิมพ์ใหญ่ (Capitalize first letter)
+        formatted_name = regexprep(formatted_name, '(^.)', '${upper($1)}');
+        figure_main_title = "Model " + formatted_name;
+        
+        figure_name = "Comparison: Model " + model_name + " with Test Signals";
+        figure('Name', figure_name);
+        tiledlayout(3, 5); % จัดเรียง 3 แถว (i) 5 คอลัมน์ (j)
+        
+        total_rmse = 0;
+        for j = 1:length(raw_signal_list)
+            raw_file_name = raw_signal_list{j};
+        
+            % ในภาพไม่มีเลขต่อท้ายในโฟลเดอร์ Test Signal? 
+            % ถ้าต้องการเทียบกับ Raw ต้นฉบับ ให้เลือกใช้ Chirp.mat, Ramp.mat ตรงๆ
+            % แต่ถ้าต้องการไฟล์ที่มีเลข 1-3 ต้องแก้ Path ตรงนี้ครับ
+            raw_file_name = raw_signal_list{j};
+            % โหลด Raw Signal จากโฟลเดอร์ Test Signal
+            % หมายเหตุ: ผมใช้ชื่อตาม raw_signal_list เพราะในโฟลเดอร์ย่อยไม่มีเลข 1-3
+            data_struct = load("Test Signal\" + raw_file_name + ".mat");
+            
+            % สมมติว่าโครงสร้างไฟล์เหมือนเดิม (data{1} คือ Velocity, data{2} คือ Input)
+            data = data_struct.data; 
+            
+            Time = data{1}.Time;
+            Time = Time - min(Time);
+            Raw_velocity = squeeze(double(data.get("Motor Angular Velocity").Data));
+            Raw_input = squeeze(double(data.get("input signal").Data));
+            
+            % timeseries
+            Raw_velocity_sig = timeseries(Raw_velocity, Time);
+            Raw_input_sig    = timeseries(Raw_input, Time);
+            
+            % --- เตรียม Simulation ---
+            simIn = Simulink.SimulationInput('Lab1_parameter_estimation_student');
+            simIn = simIn.setModelParameter('StopTime', num2str(max(Time)));
+            out = sim(simIn);
+            
+            Sim_velocity = out.logsout{1}.Values.Data;
+            
+            % --- คำนวณ Error ---
+            rmse_val = sqrt(mean((Raw_velocity - Sim_velocity).^2));
+            total_rmse = total_rmse + rmse_val;
+            
+            % --- Plotting ---
+            subplot(5, 1, j)
+            plot(Time, Raw_velocity, 'LineWidth', 1.2, 'DisplayName', 'Measured')
+            hold on
+            plot(Time, Sim_velocity, 'LineWidth', 1.2, 'DisplayName', 'Simulated')
+            grid on
+            
+            title_str = [upper(raw_file_name), sprintf('RMSE: %.3f', rmse_val)];
+            title(title_str, 'FontSize', 10)
+            
+            title_str = {raw_file_name, sprintf('RMSE: %.3f', rmse_val) };
+            title(title_str, 'FontSize', 8)
+            
+            % แสดง Legend (ป้ายกำกับ)
+            legend('Location', 'best')
+            ylabel('Omega(Rad/s)')
+            xlabel('Time(s)')
+        end 
+        
+        % --- ส่วนแสดง Parameter Box ---
+        paramText = sprintf([ ...
+        'Motor Parameters\n' ...
+        'B   = %.4e\n' ...
+        'Eff = %.5f\n' ...
+        'J   = %.4e\n' ...
+        'K_e = %.5f\n' ...
+        'R_m = %.2f\n' ...
+        'L_m = %.5f\n' ...
+        'total RMSE = %.2f'], ...
+        motor_B, motor_Eff, motor_J, motor_Ke, 2.97, 36.22e-3, total_rmse);
+        tb = annotation('textbox', ...
+                   'String', paramText, ...
+                   'FitBoxToText', 'on', ...
+                   'BackgroundColor', 'white', ...
+                   'EdgeColor', [0.3 0.3 0.3], ...
+                   'FontSize', 11, ...
+                   'FontName', 'Consolas');
+        
+        tb.Units = 'normalized';
+        tb.Position(1) = 1 - tb.Position(3) - 0.001;  % เว้นขอบขวา
+        tb.Position(2) = 1 - tb.Position(4) - 0.15;  % เว้นขอบบน
+        
+        % สร้าง Super Title
+        sgtitle(figure_main_title, 'FontSize', 16, 'FontWeight', 'bold');
+    end
+end 
